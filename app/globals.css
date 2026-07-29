@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F6F1EA;
+  --foreground: #2b2b2b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  /* Paleta da marca — trocar aqui para white-label de outro profissional */
+  --color-navy: #1B2A4A;
+  --color-navy-dark: #101a30;
+  --color-gold: #B08D57;
+  --color-cream: #F6F1EA;
+  --color-cream2: #EFE7DB;
+  --color-danger: #8A1F1F;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html {
+  scroll-behavior: smooth;
+}
