@@ -176,12 +176,14 @@ export default function ChatWidget({ open, onClose }) {
 
           {finished && (
             <div className="flex gap-2.5 flex-wrap pt-1">
-              <button
-                onClick={() => alert("Aqui entraria o calendário real de agendamento (Google Calendar / Cal.com).")}
-                className="flex-1 bg-navy text-white text-xs font-bold rounded-xl py-3 min-w-[140px]"
+              <a
+                href={site.calLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 bg-navy text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"
               >
                 📅 Agendar agora
-              </button>
+              </a>
               <a
                 href={`https://wa.me/${site.whatsappNumero}?text=${waText}`}
                 target="_blank"

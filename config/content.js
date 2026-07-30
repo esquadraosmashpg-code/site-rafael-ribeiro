@@ -6,6 +6,7 @@ export const site = {
   titulo: "Rafael Ribeiro — Hipnoterapeuta",
   instagram: "@rafaelribeirohipnoterapeuta",
   whatsappNumero: "5511933270931", // TEMP: numero da Smash Midias para testes - trocar pelo numero do Dr. Rafael antes de divulgar
+  calLink: "https://cal.com/kennedy-alves-pinto-cusgm6/30min", // TEMP: agenda de teste - trocar pela do Dr. Rafael antes de divulgar
 };
 
 export const hero = {
