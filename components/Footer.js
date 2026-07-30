@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { site } from "@/config/content";
 
 export default function Footer() {
@@ -13,10 +14,10 @@ export default function Footer() {
           </div>
           <div>
             <h5 className="text-white font-semibold mb-3">Institucional</h5>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">Política de Privacidade</a>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">LGPD</a>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">Cookies</a>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">Termos</a>
+            <Link href="/privacidade" className="block mb-2 opacity-85 hover:text-gold">Política de Privacidade</Link>
+            <Link href="/lgpd" className="block mb-2 opacity-85 hover:text-gold">LGPD</Link>
+            <Link href="/cookies" className="block mb-2 opacity-85 hover:text-gold">Cookies</Link>
+            <Link href="/termos" className="block mb-2 opacity-85 hover:text-gold">Termos</Link>
           </div>
         </div>
         <div className="border-t border-white/10 pt-5 text-center opacity-60 text-xs">
