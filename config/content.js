@@ -5,7 +5,7 @@ export const site = {
   nome: "Rafael Ribeiro",
   titulo: "Rafael Ribeiro — Hipnoterapeuta",
   instagram: "@rafaelribeirohipnoterapeuta",
-  whatsappNumero: "55SEUNUMEROAQUI", // formato: 55 + DDD + numero, sem espacos
+  whatsappNumero: "5511933270931", // TEMP: numero da Smash Midias para testes - trocar pelo numero do Dr. Rafael antes de divulgar
 };
 
 export const hero = {
