@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { chatFlow, chatLabels, site } from "@/config/content";
+import { chatFlow, chatLabels, site, ctaAgendar } from "@/config/content";
 import { containsRisk } from "@/lib/chat/risk";
 
 // Chave lida por components/agendar/AgendarFlow.js pra pre-preencher o
@@ -225,7 +225,7 @@ export default function ChatWidget({ open, onClose }) {
                 }}
                 className="flex-1 bg-navy text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"
               >
-                📅 Agendar agora
+                📅 {ctaAgendar.texto}
               </Link>
               <a
                 href={`https://wa.me/${site.whatsappNumero}?text=${waText}`}

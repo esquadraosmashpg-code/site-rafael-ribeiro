@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import { areasAtuacao } from "@/config/content";
+import CTAAgendar from "@/components/CTAAgendar";
 
 export default function ParaQuemCards() {
   const [open, setOpen] = useState(null);
 
   return (
-    <section id="paraquem" className="bg-white py-16 md:py-20">
+    <section id="areas-atuacao" className="bg-white py-16 md:py-20 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-xs tracking-widest uppercase text-gold font-bold mb-2">
           Para quem é
@@ -15,7 +16,7 @@ export default function ParaQuemCards() {
         <p className="text-gray-500 max-w-xl mb-8">
           Toque em cada card para entender como o trabalho pode ajudar.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {areasAtuacao.map((area, idx) => {
             const isOpen = open === idx;
             return (
@@ -27,7 +28,7 @@ export default function ParaQuemCards() {
                 }`}
               >
                 <div className="text-[11px] text-gold font-bold mb-1">TOQUE PARA SABER MAIS</div>
-                <h4 className="text-navy font-semibold text-sm mb-1">{area.titulo}</h4>
+                <h3 className="text-navy font-semibold text-sm mb-1">{area.titulo}</h3>
                 <p
                   className={`text-xs text-gray-500 overflow-hidden transition-all ${
                     isOpen ? "max-h-40 mt-2" : "max-h-0"
@@ -39,6 +40,7 @@ export default function ParaQuemCards() {
             );
           })}
         </div>
+        <CTAAgendar apoio="Comece pela análise do seu caso." />
       </div>
     </section>
   );

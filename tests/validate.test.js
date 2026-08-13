@@ -32,6 +32,7 @@ describe("validateBookingPayload", () => {
     data: "2026-08-20",
     horario: "09:00",
     aceitePrivacidade: true,
+    aceiteCondicoesComerciais: true,
   };
 
   test("payload completo e correto é válido", () => {
@@ -44,6 +45,18 @@ describe("validateBookingPayload", () => {
     const { valid, errors } = validateBookingPayload({ ...base, aceitePrivacidade: false });
     assert.equal(valid, false);
     assert.ok(errors.some((e) => e.includes("Privacidade")));
+  });
+
+  test("rejeita sem aceite das condições comerciais (sinal/remarcação)", () => {
+    const { valid, errors, value } = validateBookingPayload({ ...base, aceiteCondicoesComerciais: false });
+    assert.equal(valid, false);
+    assert.ok(errors.some((e) => e.includes("condições de agendamento")));
+    assert.equal(value.aceiteCondicoesComerciais, false);
+  });
+
+  test("aceite das condições comerciais só conta se for exatamente true", () => {
+    const { valid } = validateBookingPayload({ ...base, aceiteCondicoesComerciais: "sim" });
+    assert.equal(valid, false);
   });
 
   test("rejeita e-mail inválido", () => {

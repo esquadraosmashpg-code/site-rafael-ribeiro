@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import { faqs } from "@/config/content";
+import CTAAgendar from "@/components/CTAAgendar";
 
 export default function Faq() {
   const [open, setOpen] = useState(null);
 
   return (
-    <section id="faq" className="bg-cream2 py-16 md:py-20">
+    <section id="faq" className="bg-cream2 py-16 md:py-20 scroll-mt-20">
       <div className="max-w-2xl mx-auto px-6">
         <div className="text-center text-xs tracking-widest uppercase text-gold font-bold mb-2">
           Dúvidas
@@ -36,6 +37,9 @@ export default function Faq() {
               </div>
             );
           })}
+        </div>
+        <div className="mt-10">
+          <CTAAgendar apoio="Ainda com dúvidas? A análise é o próximo passo." />
         </div>
       </div>
     </section>

@@ -11,22 +11,101 @@ export const site = {
   localizacaoTexto: "Localização e horários", // TODO: pode virar algo como "São Paulo, SP — Seg a Sex, 9h-18h" quando tivermos os dados reais
 };
 
+// Rótulo/URL do CTA principal do site inteiro. Um lugar só — se o texto
+// mudar de novo, muda aqui e reflete em todo canto que importar isso.
+export const ctaAgendar = {
+  texto: "Agende sua análise",
+  href: "/agendar",
+};
+
 export const hero = {
   headline: ["Transforme sua mente.", "Supere bloqueios.", "Viva com mais liberdade emocional."],
   subheadline: "Eu te ajudo a parar de perder tempo, dinheiro e saúde com o que te machuca por dentro. Atendimento humano, conduzido por tecnologia.",
-  ctaPrincipal: "Quero iniciar meu atendimento",
+  // O primeiro passo é sempre a análise — nunca a promessa de resultado.
+  primeiroPasso: "O primeiro passo é uma análise do seu caso com o Dr. Rafael.",
+  ctaPrincipal: ctaAgendar.texto,
+  ctaSecundarioTexto: "Conhecer o processo",
+  ctaSecundarioAlvo: "a-analise",
   triagem: [
     { emoji: "🧠", texto: "Quero saber mais sobre Hipnoterapia", acao: "scroll", alvo: "hipnoterapia" },
-    { emoji: "📅", texto: "Quero agendar uma consulta", acao: "chat" },
+    { emoji: "📋", texto: "Quero entender como funciona a análise", acao: "scroll", alvo: "a-analise" },
     { emoji: "💬", texto: "Quero falar com o Dr. Rafael", acao: "chat" },
   ],
 };
 
+// "Quem é Rafael" — mesma trajetória já publicada no site, só organizada
+// em blocos (trajetória / abordagem / propósito) em vez de um parágrafo
+// só. Nenhum fato novo: formação, número de atendimentos, certificação ou
+// depoimento NÃO devem ser adicionados aqui sem confirmação do Rafael.
 export const sobre = {
   titulo: "Quem é Rafael Ribeiro?",
   paragrafo: "Mestre em Engenharia Civil — um caminho que, a princípio, nada tinha a ver com terapia. Ele encontrou sua missão ao resolver os próprios traumas, e decidiu dedicar a vida a ajudar outras pessoas a fazerem o mesmo. Hoje é casado e pai de duas filhas.",
   citacao: "Não nasci nisso. Encontrei minha missão quando resolvi meus próprios traumas — e hoje dedico minha vida a ajudar outras pessoas a fazerem o mesmo. Sou mestre em Engenharia Civil, marido e pai de duas filhas. E é essa jornada pessoal que me trouxe até aqui.",
+  blocos: [
+    {
+      titulo: "Trajetória",
+      texto:
+        "Formado mestre em Engenharia Civil, um caminho que não tinha relação nenhuma com terapia. A virada aconteceu quando ele próprio precisou resolver seus traumas — e, nesse processo, encontrou o trabalho que faz hoje.",
+    },
+    {
+      titulo: "Abordagem",
+      texto:
+        "Conduz cada atendimento de forma humana e estruturada: primeiro entende o contexto da pessoa, explica como o processo funciona, e só então define os próximos passos junto com ela.",
+    },
+    {
+      titulo: "Propósito",
+      texto:
+        "Depois de reconstruir a própria história, decidiu dedicar a vida a ajudar outras pessoas a fazerem o mesmo — hoje é casado, pai de duas filhas, e é essa jornada pessoal que sustenta o trabalho.",
+    },
+  ],
   cta: "Conheça minha metodologia",
+};
+
+// "A análise" — primeiro atendimento (nome formal do serviço: "Análise
+// inicial"). Preço/duração/sinal/saldo e política de remarcação são as
+// regras operacionais confirmadas pelo Rafael (ver config/booking.js pra
+// duração e horários fixos usados de verdade na agenda -- os valores
+// abaixo têm que bater com os de lá; ver teste em
+// tests/navegacaoConversao.test.js que checa essa consistência).
+export const analise = {
+  nomeServico: "Análise inicial",
+  titulo: "O primeiro passo é a análise",
+  intro:
+    "Antes de qualquer tratamento, o atendimento começa com uma análise — o primeiro encontro com o Dr. Rafael.",
+  objetivos: [
+    "Compreender o contexto que você traz.",
+    "Explicar como funciona a abordagem, de forma clara.",
+    "Avaliar, com honestidade, se esse atendimento é adequado pro seu caso.",
+    "Definir junto com você os próximos passos.",
+  ],
+  fechamento:
+    "Só ao final da análise — não antes — é apresentada a recomendação, o intervalo estimado e o valor do tratamento, caso ele seja indicado. Não há promessa de cura ou resultado garantido: cada processo é individual.",
+  valor: "R$ 350,00",
+  duracao: "1h30",
+  sinal: "R$ 150,00",
+  sinalTexto: "Sinal para reservar o horário",
+  saldo: "R$ 200,00",
+  saldoTexto: "Saldo pago no dia da análise",
+  modalidades: {
+    online: "Atendimento online, por videochamada.",
+    presencialDisponivel: "Atendimento presencial também disponível.",
+    presencialIndisponivel: "Atendimento presencial em breve — por enquanto, só online.",
+  },
+  // Redação revisada: nunca insinuar que existe cancelamento (com ou sem
+  // devolução) -- a regra comercial é que cancelamento simplesmente não é
+  // admitido. Frase exata confirmada.
+  politica: {
+    titulo: "Política de remarcação",
+    itens: [
+      "O agendamento não admite cancelamento. A remarcação pode ser solicitada com antecedência mínima de 48 horas.",
+    ],
+    notaDiscreta: "As condições completas serão apresentadas antes da confirmação.",
+  },
+  // Texto do checkbox comercial obrigatório em /agendar (separado do
+  // checkbox de Política de Privacidade) -- frase exata confirmada.
+  checkboxComercial:
+    "Li e concordo com as condições de agendamento, incluindo o sinal de R$ 150,00 e a regra de remarcação com antecedência mínima de 48 horas.",
+  cta: ctaAgendar.texto,
 };
 
 export const passosHipnoterapia = [

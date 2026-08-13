@@ -8,11 +8,18 @@ export const bookingConfig = {
   // antecedência mínima, janela máxima) é calculado neste fuso.
   timezone: "America/Sao_Paulo",
 
-  // Duração de cada consulta, em minutos.
-  durationMinutes: 60,
+  // Duração da Análise Inicial, em minutos. Regra confirmada pelo Rafael:
+  // 90 minutos exatos (ex.: 08:00 termina 09:30). NÃO é usada pra derivar
+  // os horários do dia -- ver `horariosFixos` abaixo. Só define quanto
+  // tempo cada horário fixo ocupa na agenda.
+  durationMinutes: 90,
 
-  // Intervalo obrigatório entre o fim de uma consulta e o início da próxima.
-  bufferMinutes: 15,
+  // Horários fixos do dia, na ordem em que aparecem pro paciente.
+  // Regra confirmada pelo Rafael -- NÃO são derivados de
+  // duração+intervalo (o negócio funciona por horário fixo de verdade,
+  // não por grade calculada): 08:00–09:30, 11:00–12:30, 14:00–15:30,
+  // 17:00–18:30. Pra mudar os horários, edita essa lista direto.
+  horariosFixos: ["08:00", "11:00", "14:00", "17:00"],
 
   // Quantas horas de antecedência mínima o paciente precisa dar antes do
   // horário da consulta (ex.: 12 = não deixa marcar para daqui a 3h).
@@ -24,10 +31,6 @@ export const bookingConfig = {
   // Dias da semana disponíveis para atendimento.
   // 0 = domingo, 1 = segunda, ..., 6 = sábado (igual ao Date#getDay()).
   availableWeekdays: [1, 2, 3, 4, 5], // segunda a sexta
-
-  // Janela de atendimento no dia, horário local (bookingConfig.timezone).
-  dayStart: "09:00",
-  dayEnd: "18:00",
 
   // Confirmação automática (sem aprovação manual do Dr. Rafael antes de
   // criar o evento). V1 = true. Se um dia precisar de aprovação manual,

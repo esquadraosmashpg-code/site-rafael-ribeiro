@@ -53,6 +53,7 @@ Para adaptar este site a **outro profissional** (produto white-label da Smash M�
 - **Endereço presencial**: trocar o placeholder em `config/booking.js` (`presencial.endereco` / `presencial.instrucoes`) pelo endereço real do consultório.
 - **Prova social sensível**: NÃO publicar a alegação de "já ajudei pessoas que tentaram suicídio" sem reescrita — ver nota de compliance na proposta estratégica (v3) e em `config/content.js`.
 - **Revisão jurídica/LGPD**: recomendado antes do lançamento oficial, dado que o site coleta dados de saúde (dado sensível).
+- **Redação comercial (sinal, remarcação, política de "A análise")**: o texto em `config/content.js#analise` (valores, sinal, saldo, política de remarcação de 48h, "não admite cancelamento") reflete o que o Rafael confirmou operacionalmente, mas **ainda não passou por validação jurídica**. Recomenda-se revisão por advogado antes da divulgação definitiva — mesma recomendação já feita para as páginas legais em `components/LegalPage.js`.
 
 ## Agenda própria (`/agendar`)
 

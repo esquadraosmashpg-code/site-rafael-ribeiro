@@ -28,3 +28,15 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Foco visível e consistente pra navegação por teclado (links, botões,
+   itens de menu, chips de triagem). Compensação de rolagem pro header
+   fixo fica em scroll-mt-* direto em cada <section id="..."> — ver
+   componentes de seção -- em vez de scroll-padding-top aqui, pra não
+   somar as duas coisas e rolar longe demais. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

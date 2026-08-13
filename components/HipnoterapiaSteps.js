@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { passosHipnoterapia } from "@/config/content";
+import CTAAgendar from "@/components/CTAAgendar";
 
 export default function HipnoterapiaSteps() {
   const ref = useRef(null);
@@ -25,7 +26,7 @@ export default function HipnoterapiaSteps() {
   }, []);
 
   return (
-    <section id="hipnoterapia" className="bg-cream2 py-16 md:py-20">
+    <section id="hipnoterapia" className="bg-cream2 py-16 md:py-20 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center text-xs tracking-widest uppercase text-gold font-bold mb-2">
           O que é
@@ -33,7 +34,7 @@ export default function HipnoterapiaSteps() {
         <h2 className="text-center text-2xl md:text-3xl font-serif text-navy mb-8">
           Hipnoterapia
         </h2>
-        <div ref={ref} className="grid md:grid-cols-4 gap-4">
+        <div ref={ref} className="grid md:grid-cols-4 gap-4 mb-10">
           {passosHipnoterapia.map((texto, idx) => (
             <div
               key={texto}
@@ -48,6 +49,7 @@ export default function HipnoterapiaSteps() {
             </div>
           ))}
         </div>
+        <CTAAgendar apoio="Entenda como isso se aplica ao seu caso na análise." />
       </div>
     </section>
   );

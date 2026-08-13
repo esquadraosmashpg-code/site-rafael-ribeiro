@@ -4,7 +4,7 @@ import { site } from "@/config/content";
 export const metadata = {
   title: site.titulo,
   description:
-    "Transforme sua mente. Supere bloqueios. Viva com mais liberdade emocional. Recepção inteligente e pré-atendimento automatizado.",
+    "Transforme sua mente com hipnoterapia. O primeiro passo é a análise do seu caso com o Dr. Rafael Ribeiro — agende online.",
 };
 
 export default function RootLayout({ children }) {

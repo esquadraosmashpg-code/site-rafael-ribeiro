@@ -5,13 +5,11 @@ import { weekdayOf, nowPartsInTZ } from "../lib/booking/timezone.js";
 
 const config = {
   timezone: "America/Sao_Paulo",
-  durationMinutes: 60,
-  bufferMinutes: 15,
+  durationMinutes: 90,
+  horariosFixos: ["08:00", "11:00", "14:00", "17:00"],
   minNoticeHours: 12,
   maxWindowDays: 14,
   availableWeekdays: [1, 2, 3, 4, 5],
-  dayStart: "09:00",
-  dayEnd: "18:00",
 };
 
 describe("addDays / toISO / parseISODate", () => {
