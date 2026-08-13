@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { bookingConfig, isPresencialDisponivel } from "@/config/booking";
 import { generateTheoreticalSlots, filterMinNotice, filterBusy } from "@/lib/booking/slots";
-import { parseISODate } from "@/lib/booking/dates";
+import { parseISODate, isValidCalendarDate } from "@/lib/booking/dates";
 import { weekdayOf } from "@/lib/booking/timezone";
 import { validateBookingPayload } from "@/lib/booking/validate";
 import { generatePublicId } from "@/lib/booking/publicId";
@@ -94,6 +94,14 @@ export async function POST(request) {
   }
 
   const date = parseISODate(value.data);
+  // Nunca confia em new Date(y, m, d) sozinho pra validar -- normaliza
+  // mes/dia fora do intervalo silenciosamente em vez de indicar erro
+  // (ex.: mes 13 viraria janeiro do ano seguinte). O regex em
+  // validateBookingPayload so garante o formato "\d{4}-\d{2}-\d{2}", nao
+  // que os numeros formem uma data real.
+  if (!isValidCalendarDate(date)) {
+    return jsonNoStore({ error: "Data inválida." }, { status: 400 });
+  }
   if (!bookingConfig.availableWeekdays.includes(weekdayOf(date))) {
     return jsonNoStore({ error: "Esse dia não está disponível para agendamento." }, { status: 409 });
   }

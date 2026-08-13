@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { toISO, parseISODate } from "@/lib/booking/dates";
+import { toISO, parseISODate, formatMonthLabel } from "@/lib/booking/dates";
 
 const WEEKDAY_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
 
@@ -8,16 +8,25 @@ function daysInMonth(year, month) {
   return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
-export default function StepData({ datasDisponiveis, value, onSelect }) {
+// `hoje` = {year, month, day} já calculado no fuso do consultório (ver
+// AgendarFlow.js, via lib/booking/timezone.js#nowPartsInTZ). Este
+// componente NUNCA lê `new Date()` local por conta própria -- toda noção
+// de "agora" chega de fora, explícita, no fuso certo.
+export default function StepData({ datasDisponiveis, value, onSelect, hoje }) {
   const disponiveisSet = useMemo(() => new Set(datasDisponiveis), [datasDisponiveis]);
   const primeiraDisponivel = datasDisponiveis[0] ? parseISODate(datasDisponiveis[0]) : null;
 
-  const [viewYear, setViewYear] = useState(primeiraDisponivel?.year ?? new Date().getFullYear());
-  const [viewMonth, setViewMonth] = useState(primeiraDisponivel?.month ?? new Date().getMonth() + 1);
+  // Lazy initializer: calcula o mês/ano inicial só uma vez, no mount, a
+  // partir da primeira data disponível (ou de "hoje" se não houver
+  // nenhuma) -- nunca do fuso local do navegador.
+  const [viewYear, setViewYear] = useState(() => primeiraDisponivel?.year ?? hoje.year);
+  const [viewMonth, setViewMonth] = useState(() => primeiraDisponivel?.month ?? hoje.month);
 
-  const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
-    new Date(Date.UTC(viewYear, viewMonth - 1, 1))
-  );
+  // formatMonthLabel formata em UTC explicitamente -- ver o comentário em
+  // lib/booking/dates.js sobre por que isso é obrigatório (sem isso, o
+  // título do mês fica errado em qualquer fuso com offset negativo, ex.
+  // America/Sao_Paulo).
+  const monthLabel = formatMonthLabel(viewYear, viewMonth);
 
   const totalDays = daysInMonth(viewYear, viewMonth);
   const firstWeekday = new Date(Date.UTC(viewYear, viewMonth - 1, 1)).getUTCDay();

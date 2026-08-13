@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { bookingConfig } from "@/config/booking";
 import { generateTheoreticalSlots, filterMinNotice, filterBusy } from "@/lib/booking/slots";
-import { parseISODate } from "@/lib/booking/dates";
+import { parseISODate, isValidCalendarDate } from "@/lib/booking/dates";
 import { weekdayOf } from "@/lib/booking/timezone";
 import { getBusyRanges } from "@/lib/google/calendarClient";
 
@@ -27,7 +27,10 @@ export async function GET(request) {
   }
 
   const date = parseISODate(dataParam);
-  if (Number.isNaN(new Date(date.year, date.month - 1, date.day).getTime())) {
+  // Nunca confia em new Date(y, m, d) sozinho pra validar -- ele
+  // normaliza mes/dia fora do intervalo em vez de indicar erro (ver
+  // isValidCalendarDate em lib/booking/dates.js).
+  if (!isValidCalendarDate(date)) {
     return jsonNoStore({ error: "Data inválida." }, { status: 400 });
   }
 

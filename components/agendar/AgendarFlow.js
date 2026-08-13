@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { bookingConfig, isPresencialDisponivel } from "@/config/booking";
 import { listAvailableDates } from "@/lib/booking/dates";
+import { nowPartsInTZ } from "@/lib/booking/timezone";
 import StepIndicator from "./StepIndicator";
 import StepModalidade from "./StepModalidade";
 import StepData from "./StepData";
@@ -57,10 +58,13 @@ export default function AgendarFlow() {
   const [erroConfirmacao, setErroConfirmacao] = useState(null);
   const [resultado, setResultado] = useState(null);
 
-  // Calculado uma vez no carregamento, no relógio do navegador — a
-  // autoridade final de antecedência mínima é sempre revalidada no
-  // servidor (GET disponibilidade e POST confirmar).
+  // "Agora" calculado uma única vez no carregamento, sempre no fuso do
+  // consultório (bookingConfig.timezone via nowPartsInTZ) -- nunca no
+  // fuso local implícito do navegador. A autoridade final de antecedência
+  // mínima/data é sempre revalidada no servidor (GET disponibilidade e
+  // POST confirmar), isso aqui só decide o que mostrar na tela.
   const datasDisponiveis = useMemo(() => listAvailableDates(bookingConfig), []);
+  const hoje = useMemo(() => nowPartsInTZ(bookingConfig.timezone), []);
 
   useEffect(() => {
     if (!dataEscolhida) return;
@@ -175,6 +179,7 @@ export default function AgendarFlow() {
           </p>
           <StepData
             datasDisponiveis={datasDisponiveis}
+            hoje={hoje}
             value={dataEscolhida}
             onSelect={(iso) => {
               setDataEscolhida(iso);

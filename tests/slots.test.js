@@ -56,6 +56,18 @@ describe("filterMinNotice", () => {
     const result = filterMinNotice(slots, now, config);
     assert.equal(result.length, slots.length);
   });
+
+  test("autoridade do backend: rejeita data inteiramente passada mesmo se o frontend mandar", () => {
+    // Simula exatamente o cenário do bug relatado: o frontend, por algum
+    // defeito, oferece/envia uma data do mês anterior (ex.: julho em vez
+    // de agosto). O backend usa o PRÓPRIO relógio ("now" real, não o que
+    // veio do cliente) e nunca deveria aceitar nada daquele dia.
+    const dataPassada = { year: 2026, month: 7, day: 20 }; // mês inteiro no passado
+    const slots = generateTheoreticalSlots(dataPassada, { ...config, dayStart: "09:00", dayEnd: "18:00" });
+    const now = new Date("2026-08-13T19:33:19Z"); // "agora" real do servidor, 13/08/2026
+    const result = filterMinNotice(slots, now, config);
+    assert.equal(result.length, 0, "nenhum horário de uma data passada deveria sobreviver à checagem do servidor");
+  });
 });
 
 describe("filterBusy", () => {
