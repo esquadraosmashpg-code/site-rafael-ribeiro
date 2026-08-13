@@ -77,7 +77,7 @@ export default function ChatWidget({ open, onClose }) {
         {
           who: "safety",
           text:
-            "Protocolo de segurança acionado: em produção, aqui a pessoa é encaminhada imediatamente para contato humano prioritário e para o CVV (188), disponível 24h. Este é um pré-atendimento automatizado e não substitui ajuda de emergência.",
+            "Você não precisa passar por isso sozinho(a) agora. Se possível, procure imediatamente alguém de confiança para ficar com você.\n\n📞 CVV — 188: apoio emocional, sigiloso, gratuito, 24h.\n🚑 Emergência imediata (risco de vida): SAMU — 192.\n\nEste pré-atendimento automatizado não substitui ajuda de emergência.",
         },
       ]);
       setFinished(true);
@@ -141,7 +141,10 @@ export default function ChatWidget({ open, onClose }) {
             }
             if (m.who === "safety") {
               return (
-                <div key={i} className="bg-red-50 border border-danger text-danger text-xs rounded-xl p-3">
+                <div
+                  key={i}
+                  className="bg-red-50 border border-danger text-danger text-xs rounded-xl p-3 whitespace-pre-line leading-relaxed"
+                >
                   ⚠️ {m.text}
                 </div>
               );
@@ -174,7 +177,38 @@ export default function ChatWidget({ open, onClose }) {
             </div>
           )}
 
-          {finished && (
+          {finished && riskFlag && (
+            <div className="pt-1 space-y-2.5">
+              <div className="flex gap-2.5 flex-wrap">
+                <a
+                  href="tel:188"
+                  className="flex-1 bg-danger text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"
+                >
+                  📞 Ligar para o CVV (188)
+                </a>
+                <a
+                  href="tel:192"
+                  className="flex-1 bg-danger text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"
+                >
+                  🚑 Emergência: SAMU (192)
+                </a>
+              </div>
+              <a
+                href={`https://wa.me/${site.whatsappNumero}`}
+                target="_blank"
+                rel="noreferrer"
+                className="block bg-white border border-gray-300 text-navy text-xs font-semibold rounded-xl py-2.5 text-center"
+              >
+                💬 Apoio adicional pelo WhatsApp com o Dr. Rafael
+              </a>
+              <p className="text-[11px] text-gray-500 text-center leading-relaxed">
+                O WhatsApp não é canal de emergência nem atendimento 24h. Nenhuma resposta sua foi
+                enviada automaticamente — você decide o que contar.
+              </p>
+            </div>
+          )}
+
+          {finished && !riskFlag && (
             <div className="flex gap-2.5 flex-wrap pt-1">
               <a
                 href={site.calLink}

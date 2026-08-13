@@ -8,9 +8,30 @@ export default function Footer() {
         <div className="flex flex-wrap justify-between gap-8 mb-8">
           <div>
             <h5 className="text-white font-semibold mb-3">{site.nome}</h5>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">WhatsApp</a>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">Instagram {site.instagram}</a>
-            <a href="#" className="block mb-2 opacity-85 hover:text-gold">Localização e horários</a>
+            <a
+              href={`https://wa.me/${site.whatsappNumero}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block mb-2 opacity-85 hover:text-gold"
+            >
+              WhatsApp
+            </a>
+            <a
+              href={`https://instagram.com/${site.instagram.replace("@", "")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block mb-2 opacity-85 hover:text-gold"
+            >
+              Instagram {site.instagram}
+            </a>
+            <a
+              href={site.localizacaoLink || "#contato"}
+              target={site.localizacaoLink ? "_blank" : undefined}
+              rel={site.localizacaoLink ? "noreferrer" : undefined}
+              className="block mb-2 opacity-85 hover:text-gold"
+            >
+              {site.localizacaoTexto || "Localização e horários"}
+            </a>
           </div>
           <div>
             <h5 className="text-white font-semibold mb-3">Institucional</h5>
