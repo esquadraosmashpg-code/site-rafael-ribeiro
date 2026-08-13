@@ -6,7 +6,7 @@ export const site = {
   titulo: "Rafael Ribeiro — Hipnoterapeuta",
   instagram: "@rafaelribeirohipnoterapeuta",
   whatsappNumero: "5511933270931", // TEMP: numero da Smash Midias para testes - trocar pelo numero do Dr. Rafael antes de divulgar
-  calLink: "https://cal.com/kennedy-alves-pinto-cusgm6/30min", // TEMP: agenda de teste - trocar pela do Dr. Rafael antes de divulgar
+  agendaPath: "/agendar", // Agenda propria (Google Calendar + Meet), integrada ao site
   localizacaoLink: null, // TODO: link do Google Maps do consultório (deixa null pra cair no fallback #contato enquanto nao temos o endereco)
   localizacaoTexto: "Localização e horários", // TODO: pode virar algo como "São Paulo, SP — Seg a Sex, 9h-18h" quando tivermos os dados reais
 };

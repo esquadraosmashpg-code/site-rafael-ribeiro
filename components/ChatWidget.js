@@ -1,8 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { chatFlow, chatLabels, site } from "@/config/content";
+import { containsRisk } from "@/lib/chat/risk";
 
-const RISK_WORDS = ["suicid", "me matar", "acabar com tudo", "n\u00e3o aguento mais viver", "automutila"];
+// Chave lida por components/agendar/AgendarFlow.js pra pre-preencher o
+// formulario de agendamento. So campos operacionais (nome/whatsapp) --
+// nunca motivo, tempo, ja_fez etc. (dado clinico nao vai pra agenda).
+const AGENDA_PREFILL_KEY = "secretariaPrefill";
 
 export default function ChatWidget({ open, onClose }) {
   const [step, setStep] = useState(0);
@@ -50,11 +55,6 @@ export default function ChatWidget({ open, onClose }) {
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
-
-  function containsRisk(text) {
-    const t = text.toLowerCase();
-    return RISK_WORDS.some((w) => t.includes(w));
-  }
 
   function handleAnswer(value) {
     const s = chatFlow[step];
@@ -210,14 +210,23 @@ export default function ChatWidget({ open, onClose }) {
 
           {finished && !riskFlag && (
             <div className="flex gap-2.5 flex-wrap pt-1">
-              <a
-                href={site.calLink}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href={site.agendaPath}
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem(
+                      AGENDA_PREFILL_KEY,
+                      JSON.stringify({ nome: answers.nome || "", whatsapp: answers.telefone || "" })
+                    );
+                  } catch {
+                    // sessionStorage indisponivel (ex.: modo privado) -- sem problema,
+                    // a agenda so fica sem pre-preenchimento
+                  }
+                }}
                 className="flex-1 bg-navy text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"
               >
                 📅 Agendar agora
-              </a>
+              </Link>
               <a
                 href={`https://wa.me/${site.whatsappNumero}?text=${waText}`}
                 target="_blank"

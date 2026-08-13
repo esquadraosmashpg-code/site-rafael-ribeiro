@@ -32,6 +32,16 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# .env.example nunca tem valor real (só nomes vazios) — é seguro versionar
+# como documentação do que precisa ser configurado.
+!.env.example
+
+# credenciais do Google (nunca commitar client secret / service account / tokens)
+client_secret*.json
+*-credentials.json
+google-credentials*.json
+service-account*.json
+*.oauth.json
 
 # vercel
 .vercel

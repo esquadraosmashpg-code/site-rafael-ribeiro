@@ -49,9 +49,44 @@ Para adaptar este site a **outro profissional** (produto white-label da Smash M�
 ## Pendências antes de publicar em produção
 
 - **Número de WhatsApp**: definir `site.whatsappNumero` em `config/content.js` (hoje está com placeholder).
-- **Agendamento real**: o botão "Agendar agora" hoje é um placeholder (`alert`). Integrar com Google Calendar API ou Cal.com (gratuito) é o próximo passo natural — ver Fase 1→2 da proposta estratégica.
+- **Variáveis do Google Calendar**: preencher `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALENDAR_ID` e `GOOGLE_REFRESH_TOKEN` na Vercel (ver `.env.example` e a seção "Agenda própria" abaixo) — sem isso `/agendar` não consegue consultar nem criar eventos.
+- **Endereço presencial**: trocar o placeholder em `config/booking.js` (`presencial.endereco` / `presencial.instrucoes`) pelo endereço real do consultório.
 - **Prova social sensível**: NÃO publicar a alegação de "já ajudei pessoas que tentaram suicídio" sem reescrita — ver nota de compliance na proposta estratégica (v3) e em `config/content.js`.
 - **Revisão jurídica/LGPD**: recomendado antes do lançamento oficial, dado que o site coleta dados de saúde (dado sensível).
+
+## Agenda própria (`/agendar`)
+
+Substitui o Cal.com de teste. Regras de horário/duração/antecedência ficam em `config/booking.js`
+(um lugar só, fácil de ajustar). Integração com o Google Calendar via `fetch` puro (sem a lib
+`googleapis`, para manter o bundle leve) em `lib/google/`.
+
+**Gerando o `GOOGLE_REFRESH_TOKEN` (fluxo oficial — sempre em produção, nunca localhost):**
+
+O redirect autorizado no Google Cloud é `https://site-rafael-ribeiro.vercel.app/api/google/callback` —
+ou seja, o Google só consegue voltar pra Vercel, nunca pra `localhost`. Por isso o fluxo oficial desta
+implantação roda inteiro em produção, com as rotas OAuth desativadas por padrão fora da janela de
+autorização:
+
+1. Publique o código com as rotas OAuth desativadas por padrão (é o comportamento padrão — elas só
+   ligam com `GOOGLE_OAUTH_SETUP_ENABLED=true`).
+2. Cadastre na Vercel (Settings → Environment Variables):
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_CALENDAR_ID`
+   - `GOOGLE_REDIRECT_URI=https://site-rafael-ribeiro.vercel.app/api/google/callback`
+   - `GOOGLE_TIMEZONE=America/Sao_Paulo`
+   - `GOOGLE_OAUTH_SETUP_ENABLED=true` — **só temporariamente**, pra essa janela de autorização
+3. Faça um redeploy (Vercel → Deployments → Redeploy, ou um novo `git push`).
+4. Abra `https://site-rafael-ribeiro.vercel.app/api/google/authorize`.
+5. Autorize com a conta Google dona da agenda (o usuário de teste já cadastrado no projeto OAuth).
+6. A página de callback mostra o `refresh_token` **uma única vez** — copie na hora, ele não fica
+   salvo em nenhum lugar do projeto (nem log, nem cookie, nem arquivo).
+7. Cole esse valor em `GOOGLE_REFRESH_TOKEN` nas Environment Variables da Vercel (nunca no código,
+   nunca no Git).
+8. Remova `GOOGLE_OAUTH_SETUP_ENABLED` (ou deixe com valor diferente de `"true"`, ex.: `"false"`).
+9. Faça um novo redeploy e confirme que `/api/google/authorize` e `/api/google/callback` voltam a
+   responder 404 — as rotas administrativas ficam bloqueadas de novo até a próxima vez que precisar
+   gerar um refresh token (ex.: se revogar o acesso e precisar reautorizar).
 
 ## Roadmap técnico
 
