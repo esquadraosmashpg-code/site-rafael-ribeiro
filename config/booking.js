@@ -1,7 +1,9 @@
 // Config central da Agenda Própria — trocar as regras aqui, não espalhar
 // constantes pelo resto do código. Este arquivo NAO tem segredo nenhum
 // (nada de client_id/secret/token aqui), pode ser importado tanto por
-// componentes de servidor quanto de cliente ("use client").
+// componentes de servidor quanto de cliente ("use client"). Segredos reais
+// (Pix, senha admin, chaves Supabase) ficam só em variáveis de ambiente,
+// nunca aqui -- ver lib/booking/paymentConfig.js.
 
 export const bookingConfig = {
   // IANA timezone do consultório. Todo o agendamento (geração de horários,
@@ -21,21 +23,33 @@ export const bookingConfig = {
   // 17:00–18:30. Pra mudar os horários, edita essa lista direto.
   horariosFixos: ["08:00", "11:00", "14:00", "17:00"],
 
-  // Quantas horas de antecedência mínima o paciente precisa dar antes do
-  // horário da consulta (ex.: 12 = não deixa marcar para daqui a 3h).
-  minNoticeHours: 12,
+  // Regra comercial definitiva (substituiu a antiga antecedência mínima
+  // contada em horas): o paciente nunca marca para o mesmo dia -- a primeira data
+  // possível é sempre amanhã, pulando pro próximo dia útil se cair em
+  // fim de semana. Ver lib/booking/dates.js#earliestBookableDate -- o
+  // backend é sempre a autoridade dessa regra, nunca o relógio do
+  // navegador do paciente.
 
   // Até quantos dias no futuro é possível marcar (janela de agenda aberta).
   maxWindowDays: 60,
 
-  // Dias da semana disponíveis para atendimento.
+  // Dias da semana disponíveis para atendimento (e para a análise).
   // 0 = domingo, 1 = segunda, ..., 6 = sábado (igual ao Date#getDay()).
   availableWeekdays: [1, 2, 3, 4, 5], // segunda a sexta
 
-  // Confirmação automática (sem aprovação manual do Dr. Rafael antes de
-  // criar o evento). V1 = true. Se um dia precisar de aprovação manual,
-  // muda pra false e ajusta o endpoint de confirmação.
-  confirmacaoAutomatica: true,
+  // Confirmação SEMPRE manual: o horário fica reservado provisoriamente
+  // (PENDING_PAYMENT) até o Dr. Rafael confirmar o recebimento do sinal
+  // no painel /admin/agendamentos. Nenhum evento é criado no Google
+  // Calendar antes dessa confirmação. Ver app/api/agendar/reservar e
+  // app/api/admin/agendamentos/[id]/confirmar.
+  confirmacaoAutomatica: false,
+
+  // Valores da Análise inicial (também refletidos em config/content.js
+  // para exibição em texto corrido -- os números aqui são a fonte usada
+  // pelas rotas de servidor).
+  valorTotalCentavos: 35000, // R$ 350,00
+  sinalCentavos: 15000, // R$ 150,00
+  saldoCentavos: 20000, // R$ 200,00
 
   // Dados do atendimento presencial.
   presencial: {
@@ -57,7 +71,7 @@ const PLACEHOLDER_MARKER = "[PLACEHOLDER]";
 
 // Enquanto o endereço presencial continuar com o placeholder, o
 // atendimento presencial fica bloqueado (na UI e, principalmente, no
-// endpoint de confirmação -- nunca só na UI). É proposital: mandar um
+// endpoint de reserva -- nunca só na UI). É proposital: mandar um
 // endereço falso pro paciente é pior do que simplesmente não oferecer a
 // opção ainda. Some sozinho assim que alguém preencher o endereço real em
 // bookingConfig.presencial.endereco.

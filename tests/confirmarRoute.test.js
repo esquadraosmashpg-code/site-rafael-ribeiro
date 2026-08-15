@@ -1,8 +1,9 @@
-// Testa as guardas HTTP puras usadas em /api/agendar/confirmar
-// diretamente (Request nativo), sem importar o route.js -- importar
-// route.js exigiria "next/server", que só resolve dentro do bundler do
-// Next (webpack/turbopack), não em `node --test` puro. Ver
-// lib/booking/httpGuards.js.
+// Testa as guardas HTTP puras compartilhadas por todas as rotas de
+// agendamento (hoje usadas em /api/agendar/reservar e nas rotas
+// /api/admin/agendamentos/*) diretamente (Request nativo), sem importar
+// nenhum route.js -- importar route.js exigiria "next/server", que só
+// resolve dentro do bundler do Next (webpack/turbopack), não em
+// `node --test` puro. Ver lib/booking/httpGuards.js.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { isAllowedOrigin, hasJsonContentType, readBodyWithLimit } from "../lib/booking/httpGuards.js";

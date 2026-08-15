@@ -27,11 +27,12 @@ export default function StepRevisao({ resumo, aceiteComercial, onAceiteComercial
       </div>
 
       {/* Condições comerciais -- mostradas aqui, imediatamente antes da
-          confirmação final, com checkbox próprio (separado do aceite de
+          reserva provisória, com checkbox próprio (separado do aceite de
           Política de Privacidade, que já foi dado na etapa anterior). O
           sinal NÃO foi pago (pagamento ainda não existe no site) -- o
           texto só informa o valor e a regra, nunca afirma cobrança feita
-          nem condiciona a confirmação ao pagamento. */}
+          nem condiciona a reserva ao pagamento -- o pagamento em si só
+          acontece depois, por Pix, fora do site. */}
       <div className="bg-cream2 border border-gold/30 rounded-2xl p-4 text-sm space-y-3">
         <div>
           <b className="text-navy">{analise.nomeServico}</b>
@@ -63,13 +64,18 @@ export default function StepRevisao({ resumo, aceiteComercial, onAceiteComercial
         </p>
       )}
 
+      <p className="text-xs text-gray-500">
+        Ao reservar, o horário fica bloqueado por 30 minutos para você enviar o comprovante do sinal. A confirmação
+        definitiva só acontece depois que o Dr. Rafael validar o pagamento.
+      </p>
+
       <button
         type="button"
         onClick={onConfirmar}
         disabled={enviando || !aceiteComercial}
         className="w-full bg-navy text-white font-bold rounded-xl py-3 disabled:opacity-60"
       >
-        {enviando ? "Confirmando…" : "Confirmar agendamento"}
+        {enviando ? "Reservando…" : "Reservar horário"}
       </button>
     </div>
   );

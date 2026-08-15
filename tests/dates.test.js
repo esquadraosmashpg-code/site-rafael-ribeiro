@@ -1,13 +1,19 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { listAvailableDates, addDays, toISO, parseISODate, formatMonthLabel } from "../lib/booking/dates.js";
+import {
+  listAvailableDates,
+  earliestBookableDate,
+  addDays,
+  toISO,
+  parseISODate,
+  formatMonthLabel,
+  formatDateBR,
+} from "../lib/booking/dates.js";
 import { weekdayOf, nowPartsInTZ } from "../lib/booking/timezone.js";
 
 const config = {
   timezone: "America/Sao_Paulo",
-  durationMinutes: 90,
   horariosFixos: ["08:00", "11:00", "14:00", "17:00"],
-  minNoticeHours: 12,
   maxWindowDays: 14,
   availableWeekdays: [1, 2, 3, 4, 5],
 };
@@ -25,9 +31,62 @@ describe("addDays / toISO / parseISODate", () => {
   });
 });
 
+describe("formatDateBR", () => {
+  test("formata no padrão dd/mm/aaaa", () => {
+    assert.equal(formatDateBR({ year: 2026, month: 8, day: 5 }), "05/08/2026");
+  });
+});
+
+describe("earliestBookableDate (regra comercial: nunca hoje, sempre amanhã, pula fim de semana)", () => {
+  test("nunca retorna o próprio dia de hoje, mesmo de manhã cedo", () => {
+    const now = new Date("2026-08-17T11:00:00Z"); // segunda de manhã em BRT
+    const earliest = earliestBookableDate(config, now);
+    assert.notDeepEqual(earliest, { year: 2026, month: 8, day: 17 });
+  });
+
+  test("segunda -> primeira data possível é terça (amanhã, dia útil)", () => {
+    const now = new Date("2026-08-17T11:00:00Z"); // segunda 17/08/2026
+    const earliest = earliestBookableDate(config, now);
+    assert.deepEqual(earliest, { year: 2026, month: 8, day: 18 });
+  });
+
+  test("sexta -> primeira data possível é a próxima SEGUNDA (pula sábado e domingo)", () => {
+    const now = new Date("2026-08-21T11:00:00Z"); // sexta 21/08/2026
+    const earliest = earliestBookableDate(config, now);
+    assert.deepEqual(earliest, { year: 2026, month: 8, day: 24 }); // segunda 24/08/2026
+    assert.equal(weekdayOf(earliest), 1);
+  });
+
+  test("mesmo tarde da noite (perto da meia-noite), amanhã continua sendo amanhã, nunca hoje", () => {
+    // 23h59 de quinta em BRT
+    const now = new Date("2026-08-21T02:59:00Z"); // quinta 20/08 quase virando sexta em UTC, mas ainda quinta em BRT
+    const parts = nowPartsInTZ(config.timezone, now);
+    const earliest = earliestBookableDate(config, now);
+    assert.notDeepEqual(earliest, { year: parts.year, month: parts.month, day: parts.day });
+  });
+
+  test("virada de mês: 31/08 (segunda) -> primeira data é 01/09 (terça)", () => {
+    const now = new Date("2026-08-31T13:00:00Z"); // segunda 31/08/2026 em BRT
+    const earliest = earliestBookableDate(config, now);
+    assert.deepEqual(earliest, { year: 2026, month: 9, day: 1 });
+  });
+
+  test("virada de ano: 31/12/2026 (quinta) -> primeira data é 01/01/2027 (sexta)", () => {
+    const now = new Date("2026-12-31T13:00:00Z"); // quinta 31/12/2026 em BRT
+    const earliest = earliestBookableDate(config, now);
+    assert.deepEqual(earliest, { year: 2027, month: 1, day: 1 });
+  });
+});
+
 describe("listAvailableDates", () => {
+  test("nunca inclui hoje", () => {
+    const now = new Date("2026-08-17T11:00:00Z"); // segunda de manhã
+    const dates = listAvailableDates(config, now);
+    assert.ok(!dates.includes("2026-08-17"));
+  });
+
   test("só lista dias úteis (segunda a sexta)", () => {
-    const now = new Date("2026-08-17T11:00:00Z"); // segunda de manhã, antecedência já satisfeita
+    const now = new Date("2026-08-17T11:00:00Z");
     const dates = listAvailableDates(config, now);
     for (const iso of dates) {
       const weekday = weekdayOf(parseISODate(iso));
@@ -35,36 +94,22 @@ describe("listAvailableDates", () => {
     }
   });
 
-  test("respeita a janela máxima (maxWindowDays)", () => {
+  test("respeita a janela máxima (maxWindowDays), contada a partir da primeira data elegível", () => {
     const now = new Date("2026-08-17T11:00:00Z");
     const dates = listAvailableDates(config, now);
+    const start = earliestBookableDate(config, now);
+    const startDate = new Date(Date.UTC(start.year, start.month - 1, start.day));
     const last = parseISODate(dates[dates.length - 1]);
     const lastDate = new Date(Date.UTC(last.year, last.month - 1, last.day));
-    const nowDate = new Date(Date.UTC(2026, 7, 17));
-    const diffDays = (lastDate - nowDate) / 86400000;
+    const diffDays = (lastDate - startDate) / 86400000;
     assert.ok(diffDays < config.maxWindowDays);
   });
 
-  test("exclui o dia de hoje se já não sobra nenhum horário com a antecedência mínima", () => {
-    // quinta às 17:50 BRT (quase fechando) -> nenhum slot de hoje tem 12h de antecedência
-    const now = new Date("2026-08-20T20:50:00Z"); // 17:50 em America/Sao_Paulo
+  test("a primeira data listada é sempre earliestBookableDate", () => {
+    const now = new Date("2026-08-21T11:00:00Z"); // sexta
     const dates = listAvailableDates(config, now);
-    assert.ok(!dates.includes("2026-08-20"));
-  });
-
-  test("todas as datas retornadas respeitam a antecedência mínima de 12h", () => {
-    const now = new Date("2026-08-17T11:00:00Z");
-    const cutoff = now.getTime() + config.minNoticeHours * 3600000;
-    const dates = listAvailableDates(config, now);
-    for (const iso of dates) {
-      // qualquer data listada precisa ter pelo menos 1 horário teórico
-      // (09:00, o mais cedo do dia) igual ou depois do cutoff -- senão
-      // ela nem deveria aparecer na lista.
-      const d = parseISODate(iso);
-      const inicioDoDia = new Date(Date.UTC(d.year, d.month - 1, d.day, 23, 59, 0)); // fim do dia, generoso
-      assert.ok(inicioDoDia.getTime() >= now.getTime(), `${iso} não deveria estar na lista`);
-    }
-    assert.ok(cutoff > now.getTime()); // sanity check do próprio teste
+    const earliest = earliestBookableDate(config, now);
+    assert.equal(dates[0], toISO(earliest));
   });
 });
 
@@ -94,7 +139,6 @@ describe("Regressão de produção: 13/08/2026 em São Paulo deve abrir em Agost
     const now = new Date("2026-08-13T19:33:19Z");
     const dates = listAvailableDates(prodConfig, now);
     const primeira = parseISODate(dates[0]);
-    // é exatamente a lógica que StepData.js usa pra decidir o mês inicial
     const label = formatMonthLabel(primeira.year, primeira.month);
     assert.equal(label, "agosto de 2026");
   });
@@ -103,7 +147,7 @@ describe("Regressão de produção: 13/08/2026 em São Paulo deve abrir em Agost
     const now = new Date("2026-08-13T19:33:19Z");
     const dates = listAvailableDates(prodConfig, now);
     for (const iso of dates) {
-      assert.ok(iso >= "2026-08-13", `${iso} é uma data passada em relação a 2026-08-13`);
+      assert.ok(iso > "2026-08-13", `${iso} deveria ser estritamente depois de 2026-08-13 (nunca hoje)`);
     }
   });
 });
@@ -125,13 +169,12 @@ describe("Horário próximo da meia-noite em UTC (fuso negativo cruza o dia)", (
     assert.equal(parts.day, 1);
   });
 
-  test("listAvailableDates com 'agora' logo depois da meia-noite UTC continua no mês certo (julho)", () => {
-    // 00:30 UTC de 01/ago = 31/jul 21:30 em SP -- ainda julho.
-    const now = new Date("2026-08-01T00:30:00Z");
-    const dates = listAvailableDates(config, now);
-    if (dates.length > 0) {
-      assert.ok(!dates[0].startsWith("2026-08-01"), "não deveria pular direto pro dia 1 de agosto ainda em 31/jul");
-    }
+  test("earliestBookableDate calculado logo depois da meia-noite UTC continua ancorado em julho (31/jul em BRT)", () => {
+    // 00:30 UTC de 01/ago = 31/jul 21:30 em SP -- "amanhã" a partir daí é 01/ago.
+    const now = new Date("2026-08-01T00:30:00Z"); // sábado 01/ago em UTC, mas sexta 31/jul em BRT
+    const earliest = earliestBookableDate(config, now);
+    // sexta 31/jul -> amanhã seria sábado (não útil) -> pula pro dia útil seguinte
+    assert.ok(!(earliest.year === 2026 && earliest.month === 7 && earliest.day === 31));
   });
 });
 

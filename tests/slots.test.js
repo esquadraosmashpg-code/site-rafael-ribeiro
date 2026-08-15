@@ -1,6 +1,6 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { generateTheoreticalSlots, filterMinNotice, filterBusy } from "../lib/booking/slots.js";
+import { generateTheoreticalSlots, filterBusy } from "../lib/booking/slots.js";
 
 // Regras confirmadas pelo Rafael: 4 horários fixos (não derivados de
 // duração+intervalo), 90 minutos cada.
@@ -82,37 +82,6 @@ describe("generateTheoreticalSlots (horários fixos confirmados)", () => {
       slots.map((s) => s.label),
       ["09:00", "13:00"]
     );
-  });
-});
-
-describe("filterMinNotice", () => {
-  test("remove slots antes da antecedência mínima", () => {
-    const slots = generateTheoreticalSlots(QUINTA, config);
-    // "agora" = quinta 08:00 BRT -> com 12h de antecedência, só vale a partir das 20:00 do mesmo dia
-    const now = new Date("2026-08-20T11:00:00Z"); // 08:00 em America/Sao_Paulo (UTC-3)
-    const result = filterMinNotice(slots, now, config);
-    assert.ok(result.every((s) => s.startUTC.getTime() >= now.getTime() + 12 * 3600000));
-    assert.ok(result.length < slots.length);
-  });
-
-  test("com antecedência já satisfeita, mantém todos os 4 horários do dia seguinte", () => {
-    const slots = generateTheoreticalSlots(QUINTA, config);
-    const now = new Date("2026-08-18T11:00:00Z"); // 2 dias antes
-    const result = filterMinNotice(slots, now, config);
-    assert.equal(result.length, slots.length);
-    assert.equal(result.length, 4);
-  });
-
-  test("autoridade do backend: rejeita data inteiramente passada mesmo se o frontend mandar", () => {
-    // Simula exatamente o cenário do bug relatado: o frontend, por algum
-    // defeito, oferece/envia uma data do mês anterior (ex.: julho em vez
-    // de agosto). O backend usa o PRÓPRIO relógio ("now" real, não o que
-    // veio do cliente) e nunca deveria aceitar nada daquele dia.
-    const dataPassada = { year: 2026, month: 7, day: 20 }; // mês inteiro no passado
-    const slots = generateTheoreticalSlots(dataPassada, config);
-    const now = new Date("2026-08-13T19:33:19Z"); // "agora" real do servidor, 13/08/2026
-    const result = filterMinNotice(slots, now, config);
-    assert.equal(result.length, 0, "nenhum horário de uma data passada deveria sobreviver à checagem do servidor");
   });
 });
 

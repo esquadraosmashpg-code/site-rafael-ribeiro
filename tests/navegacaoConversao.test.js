@@ -155,8 +155,8 @@ describe("Secretária Virtual: protocolo de crise não usa o CTA de agendamento 
 });
 
 describe("Nenhum dado clínico é transferido para o Google Calendar", () => {
-  test("descrição do evento em /api/agendar/confirmar só tem campos operacionais", () => {
-    const src = read("app/api/agendar/confirmar/route.js");
+  test("descrição do evento em /api/admin/agendamentos/[id]/confirmar só tem campos operacionais", () => {
+    const src = read("app/api/admin/agendamentos/[id]/confirmar/route.js");
     const descStart = src.indexOf("descriptionLines");
     const descEnd = src.indexOf("];", descStart);
     const descBlock = src.slice(descStart, descEnd);
@@ -270,9 +270,11 @@ describe("Regras da agenda batem com o que o Rafael confirmou (horários fixos, 
     const src = read("config/booking.js");
     assert.match(src, /durationMinutes:\s*90/);
     assert.match(src, /horariosFixos:\s*\[\s*"08:00",\s*"11:00",\s*"14:00",\s*"17:00"\s*\]/);
-    assert.match(src, /minNoticeHours:\s*12/);
-    assert.match(src, /confirmacaoAutomatica:\s*true/);
-    // regra antiga (derivar por duração+intervalo) não deveria mais existir
+    // Regra comercial definitiva: confirmação sempre manual (reserva
+    // provisória + confirmação do Rafael), nunca mais automática.
+    assert.match(src, /confirmacaoAutomatica:\s*false/);
+    // regra antiga (antecedência em horas / derivar por duração+intervalo) não deveria mais existir
+    assert.doesNotMatch(src, /minNoticeHours/);
     assert.doesNotMatch(src, /dayStart/);
     assert.doesNotMatch(src, /dayEnd/);
     assert.doesNotMatch(src, /bufferMinutes/);
@@ -379,8 +381,9 @@ describe("Botão de confirmar protegido contra múltiplos envios (trava real via
     assert.doesNotMatch(trechoBody, /idempotencyKey,/);
   });
 
-  test("sucesso muda de etapa (o botão de confirmar deixa de existir na tela)", () => {
-    assert.match(flowSrc, /goTo\("sucesso"\)/);
+  test("sucesso muda de etapa pra 'reserva' (tela de espera do Pix -- não é mais confirmação imediata)", () => {
+    assert.match(flowSrc, /goTo\("reserva"\)/);
+    assert.doesNotMatch(flowSrc, /goTo\("sucesso"\)/, "a etapa 'sucesso' foi substituída por 'reserva'");
   });
 
   test("lib/booking/submitGuard.js documenta por que usa useRef em vez de useMemo", () => {
@@ -389,52 +392,37 @@ describe("Botão de confirmar protegido contra múltiplos envios (trava real via
   });
 });
 
-describe("Servidor: idempotência vinculada ao pedido (item 3 da auditoria)", () => {
-  const routeSrc = read("app/api/agendar/confirmar/route.js");
+describe("Servidor: idempotência vinculada ao pedido -- POST /api/agendar/reservar", () => {
+  const routeSrc = read("app/api/agendar/reservar/route.js");
   const idempSrc = read("lib/booking/idempotency.js");
+  const repoSrc = read("lib/booking/bookingRepository.js");
 
   test("lê a chave do header Idempotency-Key, não do corpo", () => {
     assert.match(routeSrc, /request\.headers\.get\("idempotency-key"\)/);
   });
 
-  test("usa reserveAttempt com os 4 estados documentados", () => {
-    assert.match(idempSrc, /PROCESSING:\s*"PROCESSING"/);
-    assert.match(idempSrc, /SUCCEEDED:\s*"SUCCEEDED"/);
-    assert.match(idempSrc, /FAILED_SAFE:\s*"FAILED_SAFE"/);
-    assert.match(idempSrc, /UNKNOWN:\s*"UNKNOWN"/);
+  test("assinatura do pedido usa buildRequestSignature (modalidade+data+horário+email)", () => {
+    assert.match(routeSrc, /buildRequestSignature/);
+    assert.match(idempSrc, /modalidade.*data.*horario.*email/s);
   });
 
-  test("rota responde 409 em caso de 'conflict' (mesma chave, pedido diferente)", () => {
-    assert.match(routeSrc, /attempt\.outcome === "conflict"/);
-    const trecho = routeSrc.slice(routeSrc.indexOf('attempt.outcome === "conflict"'), routeSrc.indexOf('attempt.outcome === "conflict"') + 200);
+  test("mesma chave + pedido diferente -> 409 (idempotency_conflict, resolvido no Postgres via índice único)", () => {
+    assert.match(routeSrc, /idempotency_conflict/);
+    const trecho = routeSrc.slice(routeSrc.indexOf("idempotency_conflict"), routeSrc.indexOf("idempotency_conflict") + 200);
     assert.match(trecho, /status:\s*409/);
   });
 
-  test("rota devolve a resposta anterior em caso de 'succeeded', sem tentar criar de novo", () => {
-    assert.match(routeSrc, /attempt\.outcome === "succeeded"/);
+  test("horário já reservado por outra pessoa -> 409 (slot_taken, serializado por advisory lock no Postgres)", () => {
+    assert.match(routeSrc, /slot_taken/);
   });
 
-  test("rota nunca repete cego em caso de 'unknown'", () => {
-    assert.match(routeSrc, /attempt\.outcome === "unknown"/);
+  test("criação da reserva delega ao Supabase (createBooking) -- concorrência resolvida no banco, não só em JS", () => {
+    assert.match(routeSrc, /createBooking/);
+    assert.match(repoSrc, /pg_advisory_xact_lock|create_booking/);
   });
 
-  test("falha ANTES de chamar o Google usa FAILED_SAFE (presencial bloqueado, data inválida, dia indisponível, horário inválido, lock ocupado, freeBusy falhou, horário ocupado)", () => {
-    const ocorrencias = routeSrc.match(/finish\(IdempotencyStatus\.FAILED_SAFE\)/g) || [];
-    assert.ok(ocorrencias.length >= 6, `esperava várias ocorrências de FAILED_SAFE antes da criação, achou ${ocorrencias.length}`);
-  });
-
-  test("falha na criação do evento (chamada de escrita ao Google) usa UNKNOWN, não FAILED_SAFE", () => {
-    const criacaoIdx = routeSrc.indexOf("erro ao criar evento");
-    const trecho = routeSrc.slice(criacaoIdx - 50, criacaoIdx + 300);
-    assert.match(trecho, /finish\(IdempotencyStatus\.UNKNOWN\)/);
-  });
-
-  test("sucesso registra com SUCCEEDED antes de retornar", () => {
-    assert.match(routeSrc, /finish\(IdempotencyStatus\.SUCCEEDED, responseBody\)/);
-  });
-
-  test("limitação entre instâncias serverless está documentada", () => {
-    assert.match(idempSrc, /instânc/i);
-    assert.match(idempSrc, /distribu/i);
+  test("erro inesperado do Supabase nunca finge sucesso -- responde 502", () => {
+    const trecho = routeSrc.slice(routeSrc.indexOf("erro ao criar reserva"), routeSrc.indexOf("erro ao criar reserva") + 300);
+    assert.match(trecho, /502/);
   });
 });

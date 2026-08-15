@@ -11,9 +11,9 @@ import StepData from "./StepData";
 import StepHorario from "./StepHorario";
 import StepDados from "./StepDados";
 import StepRevisao from "./StepRevisao";
-import StepSucesso from "./StepSucesso";
+import StepReserva from "./StepReserva";
 
-const STEPS = ["modalidade", "data", "horario", "dados", "revisao", "sucesso"];
+const STEPS = ["modalidade", "data", "horario", "dados", "revisao", "reserva"];
 
 // Chave usada pela Secretária Virtual (ChatWidget) pra passar nome/whatsapp
 // pra cá sem precisar digitar de novo. Só campos operacionais — nunca
@@ -158,7 +158,7 @@ export default function AgendarFlow() {
     setEnviando(true);
     setErroConfirmacao(null);
     try {
-      const res = await fetch("/api/agendar/confirmar", {
+      const res = await fetch("/api/agendar/reservar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -191,11 +191,14 @@ export default function AgendarFlow() {
         return;
       }
       // Sucesso: a trava NUNCA é liberada aqui de propósito -- a etapa
-      // muda pra "sucesso" e o botão de confirmar deixa de existir na
-      // tela, então não há mais como reenviar por essa instância do
-      // componente de qualquer forma.
+      // muda pra "reserva" (tela de espera do Pix) e o botão de
+      // confirmar deixa de existir na tela, então não há mais como
+      // reenviar por essa instância do componente de qualquer forma.
+      // IMPORTANTE: sucesso aqui significa "reserva provisória criada",
+      // NUNCA "agendamento confirmado" -- a confirmação só acontece depois
+      // da validação manual do sinal pelo Rafael (ver StepReserva.js).
       setResultado(json);
-      goTo("sucesso");
+      goTo("reserva");
     } catch {
       setErroConfirmacao("Erro de conexão. Verifique sua internet e tente novamente.");
       // Erro de rede é recuperável -- libera pra retry.
@@ -205,11 +208,24 @@ export default function AgendarFlow() {
     }
   }
 
+  // Reseta o fluxo pra escolher outro horário depois que a reserva
+  // provisória expira -- cria um guard/chave de idempotência NOVOS (a
+  // tentativa anterior já terminou, essa é uma tentativa nova de verdade,
+  // nunca um retry da que expirou).
+  function escolherOutroHorario() {
+    submitGuardRef.current = createSubmitGuard();
+    attemptKeyStoreRef.current = createAttemptKeyStore(gerarIdempotencyKey);
+    setResultado(null);
+    setErroConfirmacao(null);
+    setHorarioEscolhido(null);
+    goTo("horario");
+  }
+
   const step = STEPS[stepIndex];
 
   return (
     <section className="max-w-lg mx-auto px-6 py-12 min-h-[60vh]">
-      {step !== "sucesso" && <StepIndicator currentIndex={stepIndex} />}
+      {step !== "reserva" && <StepIndicator currentIndex={stepIndex} />}
 
       {step === "modalidade" && (
         <div>
@@ -322,7 +338,9 @@ export default function AgendarFlow() {
         </div>
       )}
 
-      {step === "sucesso" && resultado && <StepSucesso resultado={resultado} />}
+      {step === "reserva" && resultado && (
+        <StepReserva resultado={resultado} onEscolherOutroHorario={escolherOutroHorario} />
+      )}
     </section>
   );
 }

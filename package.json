@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test"
+    "test": "node --test",
+    "test:supabase": "node scripts/verify-supabase-bookings.mjs"
   },
   "dependencies": {
     "next": "16.2.12",
