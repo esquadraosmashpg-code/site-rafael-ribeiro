@@ -4,6 +4,7 @@
 // componentes de servidor quanto de cliente ("use client"). Segredos reais
 // (Pix, senha admin, chaves Supabase) ficam só em variáveis de ambiente,
 // nunca aqui -- ver lib/booking/paymentConfig.js.
+import { endereco } from "./location.js";
 
 export const bookingConfig = {
   // IANA timezone do consultório. Todo o agendamento (geração de horários,
@@ -51,13 +52,18 @@ export const bookingConfig = {
   sinalCentavos: 15000, // R$ 150,00
   saldoCentavos: 20000, // R$ 200,00
 
-  // Dados do atendimento presencial.
+  // Dados do atendimento presencial. Endereço confirmado pelo Rafael --
+  // liberação definitiva do atendimento presencial na agenda (ver
+  // `isPresencialDisponivel` abaixo). Vem de config/location.js, a mesma
+  // fonte usada no rodapé/FAQ do site -- nunca duplicado aqui.
   presencial: {
-    // TODO(SUBSTITUIR ANTES DE PUBLICAR): endereço real do consultório.
-    endereco: "[PLACEHOLDER] Endereço do consultório — substituir antes de publicar",
-    // TODO(SUBSTITUIR ANTES DE PUBLICAR): instruções reais (estacionamento, portaria, sala, etc.)
+    endereco: endereco.textoCompleto,
+    // TODO(pendente com o Rafael): instruções de acesso reais
+    // (estacionamento, portaria, sala). Não bloqueia o agendamento
+    // presencial -- só o endereço (`endereco` acima) é obrigatório pra
+    // isso, ver `isPresencialDisponivel`.
     instrucoes:
-      "[PLACEHOLDER] Instruções de acesso (estacionamento, portaria, sala) — substituir antes de publicar",
+      "[PLACEHOLDER] Instruções de acesso (estacionamento, portaria, sala) — substituir quando confirmado",
   },
 };
 
@@ -69,12 +75,16 @@ export const bookingDisplay = {
 
 const PLACEHOLDER_MARKER = "[PLACEHOLDER]";
 
-// Enquanto o endereço presencial continuar com o placeholder, o
-// atendimento presencial fica bloqueado (na UI e, principalmente, no
-// endpoint de reserva -- nunca só na UI). É proposital: mandar um
-// endereço falso pro paciente é pior do que simplesmente não oferecer a
-// opção ainda. Some sozinho assim que alguém preencher o endereço real em
-// bookingConfig.presencial.endereco.
+// Rafael confirmou definitivamente (ver config/location.js): o paciente
+// sempre pode escolher entre presencial e online. Esta função continua
+// existindo como trava de segurança -- nunca oferece presencial se, por
+// qualquer motivo futuro, `presencial.endereco` voltar a ficar vazio ou
+// com o marcador de placeholder (mandar um endereço falso/vazio pro
+// paciente seria pior do que simplesmente não oferecer a opção). Todo o
+// resto do fluxo (StepModalidade, POST /api/agendar/reservar) checa
+// APENAS esta função -- nunca lê `presencial.endereco` diretamente pra
+// decidir se presencial está disponível.
 export function isPresencialDisponivel(config = bookingConfig) {
-  return !config.presencial.endereco.startsWith(PLACEHOLDER_MARKER);
+  const enderecoPresencial = config.presencial.endereco;
+  return Boolean(enderecoPresencial) && !enderecoPresencial.startsWith(PLACEHOLDER_MARKER);
 }

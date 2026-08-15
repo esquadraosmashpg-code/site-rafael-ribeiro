@@ -251,9 +251,18 @@ export default function AgendarFlow() {
             ← Voltar
           </button>
           <h2 className="text-lg font-serif text-navy mb-1">Escolha uma data</h2>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className={`text-sm text-gray-600 ${modalidade === "presencial" ? "mb-1" : "mb-4"}`}>
             Atendimento {modalidade === "online" ? "online" : "presencial"} — segunda a sexta.
           </p>
+          {modalidade === "presencial" && (
+            // Endereço mostrado claramente aqui, ANTES do paciente avançar
+            // pra escolher horário/dados/revisão -- não só depois, na
+            // revisão final (ver StepRevisao.js, que também mostra o
+            // mesmo endereço, vindo da mesma config).
+            <p className="text-sm text-navy font-medium mb-4 bg-cream2 border border-gold/30 rounded-xl px-3 py-2">
+              📍 {bookingConfig.presencial.endereco}
+            </p>
+          )}
           <StepData
             datasDisponiveis={datasDisponiveis}
             hoje={hoje}

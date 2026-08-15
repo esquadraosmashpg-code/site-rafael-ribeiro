@@ -77,15 +77,23 @@ describe("readBodyWithLimit", () => {
 });
 
 describe("isPresencialDisponivel (bloqueio do endereço placeholder)", () => {
-  test("retorna false enquanto o endereço configurado for o placeholder padrão", () => {
-    assert.equal(isPresencialDisponivel(bookingConfig), false);
+  test("retorna true com a config real (Rafael confirmou e liberou o endereço definitivo)", () => {
+    assert.equal(isPresencialDisponivel(bookingConfig), true);
   });
 
-  test("retorna true assim que o endereço real for configurado", () => {
+  test("retorna true com qualquer endereço real configurado (não só o definitivo)", () => {
     const configComEndereco = {
       ...bookingConfig,
       presencial: { ...bookingConfig.presencial, endereco: "Rua Exemplo, 123 - São Paulo, SP" },
     };
     assert.equal(isPresencialDisponivel(configComEndereco), true);
+  });
+
+  test("continua false se o endereço voltar a ser o placeholder (trava de segurança preservada)", () => {
+    const configComPlaceholder = {
+      ...bookingConfig,
+      presencial: { ...bookingConfig.presencial, endereco: "[PLACEHOLDER] Endereço do consultório — substituir antes de publicar" },
+    };
+    assert.equal(isPresencialDisponivel(configComPlaceholder), false);
   });
 });

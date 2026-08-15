@@ -1,4 +1,5 @@
 "use client";
+import { bookingConfig } from "@/config/booking";
 
 export default function StepModalidade({ value, onSelect, presencialDisponivel }) {
   return (
@@ -35,7 +36,7 @@ export default function StepModalidade({ value, onSelect, presencialDisponivel }
         <b className="text-navy block mb-1">Atendimento presencial</b>
         <span className="text-sm text-gray-600">
           {presencialDisponivel
-            ? "No consultório — endereço e instruções de acesso na confirmação."
+            ? `No consultório: ${bookingConfig.presencial.endereco}`
             : "Em breve — por enquanto, agende online ou fale pelo WhatsApp."}
         </span>
       </button>

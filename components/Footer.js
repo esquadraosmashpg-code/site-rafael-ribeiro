@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site } from "@/config/content";
+import { site, endereco } from "@/config/content";
 
 export default function Footer() {
   return (
@@ -24,13 +24,15 @@ export default function Footer() {
             >
               Instagram {site.instagram}
             </a>
+            <h6 className="text-white/90 font-medium mt-4 mb-1">{site.localizacaoTexto}</h6>
+            <p className="mb-1 opacity-85">{endereco.textoCompleto}</p>
             <a
-              href={site.localizacaoLink || "#contato"}
-              target={site.localizacaoLink ? "_blank" : undefined}
-              rel={site.localizacaoLink ? "noreferrer" : undefined}
+              href={endereco.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="block mb-2 opacity-85 hover:text-gold"
             >
-              {site.localizacaoTexto || "Localização e horários"}
+              Ver no Google Maps
             </a>
           </div>
           <div>

@@ -7,9 +7,16 @@ export const site = {
   instagram: "@rafaelribeirohipnoterapeuta",
   whatsappNumero: "5511933270931", // TEMP: numero da Smash Midias para testes - trocar pelo numero do Dr. Rafael antes de divulgar
   agendaPath: "/agendar", // Agenda propria (Google Calendar + Meet), integrada ao site
-  localizacaoLink: null, // TODO: link do Google Maps do consultório (deixa null pra cair no fallback #contato enquanto nao temos o endereco)
-  localizacaoTexto: "Localização e horários", // TODO: pode virar algo como "São Paulo, SP — Seg a Sex, 9h-18h" quando tivermos os dados reais
+  localizacaoTexto: "Localização e horários", // título da seção/coluna que mostra o endereço (ver `endereco` abaixo)
 };
+
+// Endereço do consultório — importado do arquivo neutro
+// config/location.js, que é a fonte ÚNICA de verdade (também importado
+// por config/booking.js, sem que um dos dois dependa do outro).
+// Reexportado aqui só para não quebrar quem já importa `endereco` de
+// "@/config/content" (Footer.js, FAQ abaixo, testes).
+import { endereco } from "./location.js";
+export { endereco };
 
 // Rótulo/URL do CTA principal do site inteiro. Um lugar só — se o texto
 // mudar de novo, muda aqui e reflete em todo canto que importar isso.
@@ -146,7 +153,10 @@ export const faqs = [
   { q: "Vou dormir?", a: "Não. Você permanece consciente e no controle durante todo o processo." },
   { q: "É seguro?", a: "Sim, quando conduzido por um profissional qualificado, como parte de um processo terapêutico estruturado." },
   { q: "Quantas sessões?", a: "Varia conforme o caso — isso é definido na consulta de avaliação." },
-  { q: "É presencial?", a: "Pode ser presencial ou online, conforme sua preferência." },
+  {
+    q: "É presencial?",
+    a: `Pode ser presencial ou online — você escolhe durante o agendamento. O consultório fica em ${endereco.textoCompleto}.`,
+  },
   { q: "É online?", a: "Sim, atendimento online também está disponível." },
 ];
 
