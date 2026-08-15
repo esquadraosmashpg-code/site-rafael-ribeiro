@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site, endereco } from "@/config/content";
+import { buildWhatsappUrl } from "@/lib/booking/whatsappMessage";
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
           <div>
             <h5 className="text-white font-semibold mb-3">{site.nome}</h5>
             <a
-              href={`https://wa.me/${site.whatsappNumero}`}
+              href={buildWhatsappUrl(site.whatsappNumero)}
               target="_blank"
               rel="noreferrer"
               className="block mb-2 opacity-85 hover:text-gold"

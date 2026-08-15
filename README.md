@@ -48,13 +48,12 @@ Para adaptar este site a **outro profissional** (produto white-label da Smash M�
 
 ## Pendências antes de publicar em produção
 
-- **Número de WhatsApp**: definir `site.whatsappNumero` em `config/content.js` (hoje está com placeholder).
 - **Variáveis do Google Calendar**: preencher `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALENDAR_ID` e `GOOGLE_REFRESH_TOKEN` na Vercel (ver `.env.example` e a seção "Agenda própria" abaixo) — sem isso `/agendar` não consegue consultar nem criar eventos.
 - **Endereço presencial**: trocar o placeholder em `config/booking.js` (`presencial.endereco` / `presencial.instrucoes`) pelo endereço real do consultório.
 - **Prova social sensível**: NÃO publicar a alegação de "já ajudei pessoas que tentaram suicídio" sem reescrita — ver nota de compliance na proposta estratégica (v3) e em `config/content.js`.
 - **Revisão jurídica/LGPD**: recomendado antes do lançamento oficial, dado que o site coleta dados de saúde (dado sensível).
 - **Redação comercial (sinal, remarcação, política de "A análise")**: o texto em `config/content.js#analise` (valores, sinal, saldo, política de remarcação de 48h, "não admite cancelamento") reflete o que o Rafael confirmou operacionalmente, mas **ainda não passou por validação jurídica**. Recomenda-se revisão por advogado antes da divulgação definitiva — mesma recomendação já feita para as páginas legais em `components/LegalPage.js`.
-- **Reserva/Pix/painel administrativo**: preencher `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOOKING_ADMIN_PASSWORD`, `BOOKING_ADMIN_SESSION_SECRET`, `BOOKING_PIX_KEY`, `BOOKING_PIX_RECEIVER` e `BOOKING_WHATSAPP_NUMBER` na Vercel (ver seção "Reserva provisória com Pix" abaixo) — sem isso, `/api/agendar/reservar` responde 503 e a tela de reserva nunca mostra uma chave Pix falsa.
+- **Reserva/Pix/painel administrativo**: preencher `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOOKING_ADMIN_PASSWORD`, `BOOKING_ADMIN_SESSION_SECRET`, `BOOKING_PIX_KEY` e `BOOKING_PIX_RECEIVER` na Vercel (ver seção "Reserva provisória com Pix" abaixo) — sem isso, `/api/agendar/reservar` responde 503 e a tela de reserva nunca mostra uma chave Pix falsa. O número de WhatsApp usado no botão "Enviar comprovante" **não** vem mais de variável de ambiente — vem de `site.whatsappNumero` em `config/content.js` (mesma fonte usada pelo rodapé e pela Secretária Virtual).
 
 ## Agenda própria (`/agendar`)
 

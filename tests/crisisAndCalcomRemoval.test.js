@@ -63,9 +63,12 @@ describe("Protocolo de crise preservado (ChatWidget)", () => {
     const riskBlockStart = content.indexOf("finished && riskFlag");
     const normalBlockStart = content.indexOf("finished && !riskFlag");
     const riskBlock = content.slice(riskBlockStart, normalBlockStart);
-    // no bloco de crise, o link de WhatsApp não deve montar "?text=" com base em answers.*
-    const waLinkMatch = riskBlock.match(/wa\.me\/\$\{site\.whatsappNumero\}([^`]*)`/);
-    assert.ok(waLinkMatch, "link de WhatsApp não encontrado no bloco de crise");
+    // no bloco de crise, buildWhatsappUrl deve ser chamado só com o número
+    // (sem segundo argumento de mensagem) -- nunca monta "?text=" com base
+    // em answers.*
+    const waLinkMatch = riskBlock.match(/buildWhatsappUrl\(([^)]*)\)/);
+    assert.ok(waLinkMatch, "chamada a buildWhatsappUrl não encontrada no bloco de crise");
+    assert.ok(!waLinkMatch[1].includes(","), "buildWhatsappUrl no bloco de crise não deveria receber um segundo argumento (mensagem)");
     assert.ok(!waLinkMatch[1].includes("answers."), "WhatsApp de crise não deveria enviar respostas do usuário automaticamente");
   });
 

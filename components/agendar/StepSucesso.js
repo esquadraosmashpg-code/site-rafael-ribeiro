@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { site } from "@/config/content";
+import { buildWhatsappUrl } from "@/lib/booking/whatsappMessage";
 
 function toGCalTimestamp(iso) {
   // "2026-08-20T12:00:00.000Z" -> "20260820T120000Z" (formato exigido
@@ -11,9 +12,7 @@ function toGCalTimestamp(iso) {
 export default function StepSucesso({ resultado }) {
   const isOnline = resultado.modalidade === "online";
 
-  const waText = encodeURIComponent(
-    `Olá! Acabei de agendar minha consulta ${isOnline ? "online" : "presencial"} para ${resultado.data} às ${resultado.horario}. Código: ${resultado.publicId}.`
-  );
+  const waText = `Olá! Acabei de agendar minha consulta ${isOnline ? "online" : "presencial"} para ${resultado.data} às ${resultado.horario}. Código: ${resultado.publicId}.`;
 
   const detalhes = [`Código: ${resultado.publicId}`, resultado.meetLink ? `Meet: ${resultado.meetLink}` : null]
     .filter(Boolean)
@@ -66,7 +65,7 @@ export default function StepSucesso({ resultado }) {
 
       <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
         <a
-          href={`https://wa.me/${site.whatsappNumero}?text=${waText}`}
+          href={buildWhatsappUrl(site.whatsappNumero, waText)}
           target="_blank"
           rel="noreferrer"
           className="flex-1 bg-[#25D366] text-white text-sm font-bold rounded-xl py-3 text-center"

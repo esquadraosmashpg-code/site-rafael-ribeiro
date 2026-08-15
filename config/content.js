@@ -5,7 +5,7 @@ export const site = {
   nome: "Rafael Ribeiro",
   titulo: "Rafael Ribeiro — Hipnoterapeuta",
   instagram: "@rafaelribeirohipnoterapeuta",
-  whatsappNumero: "5511933270931", // TEMP: numero da Smash Midias para testes - trocar pelo numero do Dr. Rafael antes de divulgar
+  whatsappNumero: "5511991749185", // Numero publico do Dr. Rafael -- fonte central reutilizada por Footer, ChatWidget, contato e fluxo de reserva (ver lib/booking/paymentConfig.js#getWhatsappNumber).
   agendaPath: "/agendar", // Agenda propria (Google Calendar + Meet), integrada ao site
   localizacaoTexto: "Localização e horários", // título da seção/coluna que mostra o endereço (ver `endereco` abaixo)
 };

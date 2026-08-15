@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { chatFlow, chatLabels, site, ctaAgendar } from "@/config/content";
 import { containsRisk } from "@/lib/chat/risk";
+import { buildWhatsappUrl } from "@/lib/booking/whatsappMessage";
 
 // Chave lida por components/agendar/AgendarFlow.js pra pre-preencher o
 // formulario de agendamento. So campos operacionais (nome/whatsapp) --
@@ -98,9 +99,7 @@ export default function ChatWidget({ open, onClose }) {
   const currentStepDef = chatFlow[step];
   const progress = Math.min(100, Math.round((step / chatFlow.length) * 100));
 
-  const waText = encodeURIComponent(
-    `Olá! Meu nome é ${answers.nome || ""}, tenho ${answers.idade || ""} anos, sou de ${answers.cidade || ""}. Motivo do contato: ${answers.motivo || ""}. Prefiro atendimento ${answers.modalidade || ""} no período da ${answers.horario || ""}.`
-  );
+  const waText = `Olá! Meu nome é ${answers.nome || ""}, tenho ${answers.idade || ""} anos, sou de ${answers.cidade || ""}. Motivo do contato: ${answers.motivo || ""}. Prefiro atendimento ${answers.modalidade || ""} no período da ${answers.horario || ""}.`;
 
   if (!open) return null;
 
@@ -194,7 +193,7 @@ export default function ChatWidget({ open, onClose }) {
                 </a>
               </div>
               <a
-                href={`https://wa.me/${site.whatsappNumero}`}
+                href={buildWhatsappUrl(site.whatsappNumero)}
                 target="_blank"
                 rel="noreferrer"
                 className="block bg-white border border-gray-300 text-navy text-xs font-semibold rounded-xl py-2.5 text-center"
@@ -228,7 +227,7 @@ export default function ChatWidget({ open, onClose }) {
                 📅 {ctaAgendar.texto}
               </Link>
               <a
-                href={`https://wa.me/${site.whatsappNumero}?text=${waText}`}
+                href={buildWhatsappUrl(site.whatsappNumero, waText)}
                 target="_blank"
                 rel="noreferrer"
                 className="flex-1 bg-[#25D366] text-white text-xs font-bold rounded-xl py-3 text-center min-w-[140px]"

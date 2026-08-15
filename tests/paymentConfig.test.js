@@ -50,13 +50,20 @@ describe("getPixConfig -- nunca inventa uma chave falsa", () => {
   });
 });
 
-describe("getWhatsappNumber", () => {
-  test("null quando não configurado", () => {
-    assert.equal(getWhatsappNumber(), null);
+describe("getWhatsappNumber -- fonte central (config/content.js#site.whatsappNumero), não mais env var", () => {
+  test("devolve exatamente site.whatsappNumero -- mesma fonte central usada por Footer/ChatWidget/fluxo de reserva", async () => {
+    const { site } = await import("../config/content.js");
+    assert.equal(getWhatsappNumber(), site.whatsappNumero);
   });
-  test("devolve o valor configurado", () => {
-    process.env.BOOKING_WHATSAPP_NUMBER = "5511999998888";
-    assert.equal(getWhatsappNumber(), "5511999998888");
+
+  test("o número configurado tem formato válido: só dígitos, começa com DDI 55", () => {
+    const numero = getWhatsappNumber();
+    assert.match(numero, /^55\d+$/);
+  });
+
+  test("BOOKING_WHATSAPP_NUMBER (variável de ambiente) não é mais lida -- deixou de ser a fonte", () => {
+    process.env.BOOKING_WHATSAPP_NUMBER = "5511000000000";
+    assert.notEqual(getWhatsappNumber(), "5511000000000");
   });
 });
 
