@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { site } from "@/config/content";
 
 export default function LegalPage({ titulo, atualizado, children }) {
   return (
@@ -17,10 +16,6 @@ export default function LegalPage({ titulo, atualizado, children }) {
       </div>
       <div className="max-w-3xl mx-auto px-6 py-10 text-[15px] leading-relaxed space-y-4">
         {children}
-        <div className="mt-10 p-4 bg-cream2 rounded-xl text-xs text-gray-600 border border-gold/30">
-          Texto em versão inicial (draft), gerado como parte do desenvolvimento do site de {site.nome}.
-          Recomenda-se revisão por advogado especializado em LGPD e saúde antes da publicação oficial.
-        </div>
       </div>
     </main>
   );
