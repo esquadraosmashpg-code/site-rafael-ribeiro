@@ -7,7 +7,7 @@ export const site = {
   instagram: "@rafaelribeirohipnoterapeuta",
   whatsappNumero: "5511991749185", // Numero publico do Dr. Rafael -- fonte central reutilizada por Footer, ChatWidget, contato e fluxo de reserva (ver lib/booking/paymentConfig.js#getWhatsappNumber).
   agendaPath: "/agendar", // Agenda propria (Google Calendar + Meet), integrada ao site
-  localizacaoTexto: "Localização e horários", // título da seção/coluna que mostra o endereço (ver `endereco` abaixo)
+  localizacaoTexto: "Localização do consultório", // título da seção/coluna que mostra o endereço (ver `endereco` abaixo) -- nunca "...e horários": esse bloco não exibe horário de funcionamento nenhum
 };
 
 // Endereço do consultório — importado do arquivo neutro
