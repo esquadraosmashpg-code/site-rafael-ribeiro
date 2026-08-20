@@ -177,6 +177,46 @@ export const chatFlow = [
   { key: "modalidade", bot: "Você deseja atendimento:", type: "chips", options: ["Online", "Presencial"] },
 ];
 
+// Depoimentos — prints de conversas reais (WhatsApp) já anonimizados
+// ANTES de chegarem aqui (nomes e fotos ocultados pela própria fonte).
+// Este arquivo NUNCA deve tentar recuperar, inferir ou expor identidade:
+// só referencia os arquivos neutros já prontos em public/depoimentos/.
+// `numero` vira o rótulo do alt text ("Depoimento anônimo N..."). Os 22
+// arquivos do lote estão completos (o 11 veio corrompido inicialmente --
+// 0 bytes -- e foi substituído por um arquivo válido depois). `largura`/
+// `altura` são as dimensões reais do PNG (medidas no arquivo), exigidas
+// pelo next/image pra nunca causar layout shift.
+export const depoimentos = {
+  titulo: "Relatos de quem viveu essa transformação",
+  aviso:
+    "Experiências reais compartilhadas por pessoas atendidas pelo Rafael. Cada processo é individual e os resultados podem variar.",
+  imagens: [
+    { numero: 1, arquivo: "depoimento-01.png", largura: 1179, altura: 2556 },
+    { numero: 2, arquivo: "depoimento-02.png", largura: 1179, altura: 1778 },
+    { numero: 3, arquivo: "depoimento-03.png", largura: 964, altura: 1600 },
+    { numero: 4, arquivo: "depoimento-04.png", largura: 1125, altura: 1696 },
+    { numero: 5, arquivo: "depoimento-05.png", largura: 1125, altura: 2000 },
+    { numero: 6, arquivo: "depoimento-06.png", largura: 1018, altura: 1600 },
+    { numero: 7, arquivo: "depoimento-07.png", largura: 738, altura: 1600 },
+    { numero: 8, arquivo: "depoimento-08.png", largura: 738, altura: 1600 },
+    { numero: 9, arquivo: "depoimento-09.png", largura: 738, altura: 1600 },
+    { numero: 10, arquivo: "depoimento-10.png", largura: 792, altura: 1600 },
+    { numero: 11, arquivo: "depoimento-11.png", largura: 776, altura: 1600 },
+    { numero: 12, arquivo: "depoimento-12.png", largura: 1082, altura: 1600 },
+    { numero: 13, arquivo: "depoimento-13.png", largura: 1060, altura: 1600 },
+    { numero: 14, arquivo: "depoimento-14.png", largura: 738, altura: 1600 },
+    { numero: 15, arquivo: "depoimento-15.png", largura: 870, altura: 1600 },
+    { numero: 16, arquivo: "depoimento-16.png", largura: 834, altura: 1600 },
+    { numero: 17, arquivo: "depoimento-17.png", largura: 1066, altura: 1600 },
+    { numero: 18, arquivo: "depoimento-18.png", largura: 960, altura: 1600 },
+    { numero: 19, arquivo: "depoimento-19.png", largura: 760, altura: 1600 },
+    { numero: 20, arquivo: "depoimento-20.png", largura: 834, altura: 1600 },
+    { numero: 21, arquivo: "depoimento-21.png", largura: 738, altura: 1600 },
+    { numero: 22, arquivo: "depoimento-22.png", largura: 830, altura: 1600 },
+  ],
+  quantidadeInicial: 6,
+};
+
 export const chatLabels = {
   nome: "Nome", idade: "Idade", cidade: "Cidade", telefone: "Telefone", motivo: "Motivo",
   tempo: "Duração", ja_fez: "Já fez hipnoterapia", como_conheceu: "Como conheceu",

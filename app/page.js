@@ -7,6 +7,7 @@ import HipnoterapiaSteps from "@/components/HipnoterapiaSteps";
 import Analise from "@/components/Analise";
 import ParaQuemCards from "@/components/ParaQuemCards";
 import Timeline from "@/components/Timeline";
+import Depoimentos from "@/components/Depoimentos";
 import SecretariaCTA from "@/components/SecretariaCTA";
 import Faq from "@/components/Faq";
 import CTAFinal from "@/components/CTAFinal";
@@ -28,6 +29,14 @@ export default function Home() {
       <Analise />
       <Timeline />
       <ParaQuemCards />
+      {/* Prova social posicionada aqui (depois de "Áreas de atuação", antes
+          da FAQ/CTA final) em vez de logo após "Como funciona": encaixa
+          melhor na narrativa da página -- como funciona -> pra quem é ->
+          depoimentos reais -> tira dúvidas -> chamada final -- do que
+          interromper a ponte entre Timeline e ParaQuemCards. Continua
+          "depois de Como funciona e antes do CTA principal (CTAFinal)",
+          como pedido. */}
+      <Depoimentos />
       <Faq />
       <SecretariaCTA onOpenChat={openChat} />
       <CTAFinal />

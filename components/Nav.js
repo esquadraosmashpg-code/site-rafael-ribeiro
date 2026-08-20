@@ -4,14 +4,19 @@ import Link from "next/link";
 import { site, ctaAgendar } from "@/config/content";
 
 // IDs precisam bater exatamente com o `id` de cada <section> na página
-// (Hero, Sobre/QuemERafael, Analise, Timeline, ParaQuemCards, Faq) --
-// coberto por teste em tests/navegacaoConversao.test.js.
+// (Hero, Sobre/QuemERafael, Analise, Timeline, ParaQuemCards,
+// Depoimentos, Faq) -- coberto por teste em tests/navegacaoConversao.test.js.
+// "Depoimentos" só foi adicionado aqui depois de medir de verdade que
+// os 7 itens continuam cabendo em uma linha só em 1280/1366/1440/1920px
+// (ver tests/depoimentos.test.js) -- se algum dia não couber mais,
+// tirar daqui primeiro em vez de comprimir o menu.
 const NAV_ITEMS = [
   { id: "inicio", label: "Início" },
   { id: "quem-e-rafael", label: "Quem é Rafael" },
   { id: "a-analise", label: "A análise" },
   { id: "como-funciona", label: "Como funciona" },
   { id: "areas-atuacao", label: "Áreas de atuação" },
+  { id: "depoimentos", label: "Depoimentos" },
   { id: "faq", label: "Perguntas frequentes" },
 ];
 
